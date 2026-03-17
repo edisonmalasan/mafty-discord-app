@@ -35,7 +35,7 @@ Before running the bot, you may want to configure the admin ID in `Mafty-Bot.py`
 - Open `Mafty-Bot.py` and locate the `ADMIN_ID` variable (around line 17).
 - Change it to your personal Discord User ID so you can use the admin commands.
   ```python
-  ADMIN_ID = 123456789012345678  # Replace with your ID
+  ADMIN_ID = 123456789012345678  # Replace with your Discord ID
   ```
 
 ## Usage
