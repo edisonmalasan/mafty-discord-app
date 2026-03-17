@@ -67,3 +67,6 @@ The following slash commands are available once the bot is running and synced:
 
 ## Data Storage
 - Allowed users are saved persistently in a `users.json` file in the same directory as the script. This file is updated automatically when you use the admin commands.
+
+## License
+This project is licensed under the [MIT License](LICENSE).
