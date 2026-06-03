@@ -1,8 +1,9 @@
 # Mafty Discord Auto Message Bot
 
-A Discord slash-command bot for starting and stopping repeated autopost messages to a Discord channel.
+Mafty Bot is a Discord bot designed to provide an automated message posting service ("autopost"). It allows authorized users to schedule automatic messages to be sent to a specific channel at regular intervals. 
 
-The bot supports access control, per-user background autopost tasks, optional image attachments, automatic reaction after each sent message, and owner-only user management.
+> [!WARNING]
+> This bot utilizes user tokens to send messages on behalf of a user account. This practice is known as "self-botting" and is technically against **Discord's Terms of Service**. Use this tool at your own risk.
 
 ## Features
 
@@ -225,3 +226,6 @@ Active autopost tasks and uploaded image bytes are kept in memory while the bot 
 - Large images may take longer to upload on every autopost cycle.
 - Very short delays can trigger Discord rate limits.
 - Discord may reject messages if the account or token does not have permission to post in the target channel.
+
+## License
+This project is licensed under the [MIT License](LICENSE).

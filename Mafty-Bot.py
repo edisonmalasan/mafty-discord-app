@@ -9,21 +9,17 @@ import json
 from typing import Optional
 from dotenv import load_dotenv
 
-# =========================
 # ENV SETUP
-# =========================
 load_dotenv()
 BOT_TOKEN = os.getenv("DISCORD_TOKEN")
 
-# =========================
+
 # CONSTANTS
-# =========================
 USERS_FILE = "users.json"
 ADMIN_ID = 691183268611096616  # ONLY you can add/remove users
 
-# =========================
+
 # BOT SETUP
-# =========================
 intents = discord.Intents.default()
 
 class MaftyBot(commands.Bot):
@@ -40,9 +36,8 @@ class MaftyBot(commands.Bot):
 
 bot = MaftyBot()
 
-# =========================
+
 # USER PERSISTENCE
-# =========================
 def load_users() -> set[int]:
     if not os.path.exists(USERS_FILE):
         return set()
@@ -57,9 +52,7 @@ def save_users(users: set[int]):
 def is_allowed(user_id: int) -> bool:
     return user_id in load_users()
 
-# =========================
 # EMBED HELPERS
-# =========================
 def success_embed(title: str, description: str):
     embed = discord.Embed(
         title=title,
@@ -80,9 +73,7 @@ def error_embed(title: str, description: str):
     embed.timestamp = discord.utils.utcnow()
     return embed
 
-# =========================
 # TASK REGISTRY
-# =========================
 active_tasks: dict[int, dict[int, dict]] = {}
 
 def get_next_task_id(user_id: int) -> int:
@@ -97,9 +88,7 @@ def short_text(value: str, limit: int = 80) -> str:
         return value
     return f"{value[:limit - 3]}..."
 
-# =========================
 # AUTPOST WORKER
-# =========================
 async def autopost_task(
     interaction: discord.Interaction,
     task_id: int,
@@ -157,10 +146,8 @@ async def autopost_task(
                     send_url,
                     **post_kwargs
                 ) as response:
-
-                    # =========================
+  
                     # SUCCESS
-                    # =========================
                     if response.status == 200:
                         data = await response.json()
                         msg_id = data["id"]
@@ -176,10 +163,7 @@ async def autopost_task(
                             async with session.put(react_url, headers=base_headers):
                                 pass
                             await asyncio.sleep(0.3)
-
-                    # =========================
                     # RATE LIMITED
-                    # =========================
                     elif response.status == 429:
                         data = await response.json()
                         retry_after = float(data.get("retry_after", delay))
@@ -201,10 +185,7 @@ async def autopost_task(
                         print(f"[{user_id} #{task_id}] Rate limited. Waiting {retry_after}s")
                         await asyncio.sleep(retry_after)
                         continue
-
-                    # =========================
                     # INVALID TOKEN
-                    # =========================
                     elif response.status == 401:
                         embed = discord.Embed(
                             title="❌ Invalid Token",
@@ -219,22 +200,15 @@ async def autopost_task(
 
                         await interaction.followup.send(embed=embed, ephemeral=True)
                         break
-
-                    # =========================
                     # OTHER ERRORS
-                    # =========================
                     else:
                         text = await response.text()
                         print(f"[{user_id} #{task_id}] Error {response.status}: {text}")
 
-                # =========================
                 # NORMAL INTERVAL WAIT
-                # =========================
                 await asyncio.sleep(delay)
-
-        # =========================
+                
         # MANUAL STOP
-        # =========================
         except asyncio.CancelledError:
             print(f"[TASK STOPPED] User {user_id} Task {task_id}")
             raise
@@ -245,9 +219,8 @@ async def autopost_task(
                 if not user_tasks:
                     del active_tasks[user_id]
 
-# =========================
+
 # /AUTOPOST
-# =========================
 @bot.tree.command(name="autopost", description="Start auto-posting messages.")
 async def autopost(
     interaction: discord.Interaction,
@@ -316,9 +289,7 @@ async def autopost(
 
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
-# =========================
 # /LISTAUTOPOST
-# =========================
 @bot.tree.command(name="listautopost", description="List your active autopost tasks.")
 async def list_autopost(interaction: discord.Interaction):
     user_id = interaction.user.id
@@ -354,9 +325,7 @@ async def list_autopost(interaction: discord.Interaction):
 
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
-# =========================
 # /STOP
-# =========================
 @bot.tree.command(name="stop", description="Stop one of your active autopost tasks.")
 async def stop(interaction: discord.Interaction, task_id: int):
     user_id = interaction.user.id
@@ -399,10 +368,8 @@ async def stop_task_autocomplete(
 
     return choices[:25]
 
-# =========================
 # /ADDUSERID
-# =========================
-@bot.tree.command(name="adduserid", description="Grant bot access to a user ID.")
+@bot.tree.cmmand(name="adduserid", description="Grant bot access to a user ID.")
 async def add_userid(interaction: discord.Interaction, user_id: str):
     if interaction.user.id != ADMIN_ID:
         embed = error_embed(
@@ -433,9 +400,7 @@ async def add_userid(interaction: discord.Interaction, user_id: str):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-# =========================
 # /REMOVEUSERID
-# =========================
 @bot.tree.command(name="removeuserid", description="Revoke bot access from a user ID.")
 async def remove_userid(interaction: discord.Interaction, user_id: str):
     if interaction.user.id != ADMIN_ID:
@@ -468,9 +433,7 @@ async def remove_userid(interaction: discord.Interaction, user_id: str):
 
 
 
-# =========================
 # RUN
-# =========================
 if __name__ == "__main__":
     if not BOT_TOKEN:
         raise RuntimeError("DISCORD_TOKEN not set in .env")
