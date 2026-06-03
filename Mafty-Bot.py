@@ -369,7 +369,7 @@ async def stop_task_autocomplete(
     return choices[:25]
 
 # /ADDUSERID
-@bot.tree.cmmand(name="adduserid", description="Grant bot access to a user ID.")
+@bot.tree.command(name="adduserid", description="Grant bot access to a user ID.")
 async def add_userid(interaction: discord.Interaction, user_id: str):
     if interaction.user.id != ADMIN_ID:
         embed = error_embed(
