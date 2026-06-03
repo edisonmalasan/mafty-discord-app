@@ -138,10 +138,10 @@ Allowed users are stored in `users.json`:
 }
 ```
 
-The admin user ID is configured directly in `Mafty-Bot.py`:
+The admin user ID is configured in `.env`:
 
-```python
-ADMIN_ID = 691183268611096616
+```env
+ADMIN_ID=your-discord-user-id
 ```
 
 Only users listed in `users.json` can start autopost tasks. Only the admin can add or remove allowed users.
@@ -191,16 +191,17 @@ Follow these steps to set up and run the bot locally.
    APP_ID=your-application-id
    DISCORD_TOKEN=your-bot-token
    PUBLIC_KEY=your-public-key
+   ADMIN_ID=your-discord-user-id
    ```
 
-   `DISCORD_TOKEN` is required to run the bot. `APP_ID` and `PUBLIC_KEY` are included for Discord application completeness.
+   `DISCORD_TOKEN` is required to run the bot. `ADMIN_ID` is required for owner-only commands like `/adduserid` and `/removeuserid`. `APP_ID` and `PUBLIC_KEY` are included for Discord application completeness.
 
 ## Running the Bot
 
 Start the bot with:
 
 ```bash
-python Mafty-Bot.py
+python main.py
 ```
 
 When the bot starts successfully, it syncs the slash commands globally and prints the logged-in bot user in the terminal.
@@ -215,7 +216,11 @@ The bot uses these local files:
 - `.env.sample`: Example environment file.
 - `users.json`: Allowed Discord user IDs.
 - `requirements.txt`: Python dependencies.
-- `Mafty-Bot.py`: Main bot program.
+- `main.py`: Main bot entrypoint.
+- `config.py`: Shared configuration values.
+- `commands/`: Slash command registration modules.
+- `services/`: Background task, Discord API, and persistence logic.
+- `utils/`: Shared helper functions.
 
 Active autopost tasks and uploaded image bytes are kept in memory while the bot is running. They are not saved to disk. If the bot restarts, active autopost tasks must be started again.
 
