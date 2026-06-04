@@ -53,9 +53,9 @@ async def autopost_task(
     channel_id: str,
     message: str,
     delay: float,
-    image_payload: Optional[dict] = None
+    image_payload: Optional[dict] = None,
+    reaction_emoji: Optional[str] = None
 ) -> None:
-    emojis = ["\U0001F4AF"]
     base_url = f"https://discord.com/api/{DISCORD_API_VERSION}"
     send_url = f"{base_url}/channels/{channel_id}/messages"
 
@@ -77,7 +77,15 @@ async def autopost_task(
                         data = await response.json()
                         msg_id = data["id"]
                         print(f"[{user_id} #{task_id}] Message sent ({msg_id})")
-                        await react_to_message(session, base_url, base_headers, channel_id, msg_id, emojis)
+                        if reaction_emoji:
+                            await react_to_message(
+                                session,
+                                base_url,
+                                base_headers,
+                                channel_id,
+                                msg_id,
+                                reaction_emoji
+                            )
 
                     elif response.status == 429:
                         data = await response.json()
@@ -142,14 +150,13 @@ async def react_to_message(
     headers: dict,
     channel_id: str,
     msg_id: str,
-    emojis: list[str]
+    emoji: str
 ) -> None:
-    for emoji in emojis:
-        encoded = urllib.parse.quote(emoji)
-        react_url = f"{base_url}/channels/{channel_id}/messages/{msg_id}/reactions/{encoded}/@me"
-        async with session.put(react_url, headers=headers):
-            pass
-        await asyncio.sleep(0.3)
+    encoded = urllib.parse.quote(emoji)
+    react_url = f"{base_url}/channels/{channel_id}/messages/{msg_id}/reactions/{encoded}/@me"
+    async with session.put(react_url, headers=headers):
+        pass
+    await asyncio.sleep(0.3)
 
 
 async def notify_rate_limit(interaction: discord.Interaction, retry_after: float) -> None:

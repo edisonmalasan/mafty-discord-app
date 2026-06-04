@@ -7,8 +7,9 @@ Mafty Bot is a Discord bot designed to provide an automated message posting serv
 
 ## Features
 
-- `/autopost token:<token> channel_id:<id> message:<text> delay:<seconds> image:<attachment>` starts a new autopost task for the requesting user.
+- `/autopost token:<token> channel_id:<id> message:<text> delay:<seconds> image:<attachment> emoji:<emoji>` starts a new autopost task for the requesting user.
 - `image` is optional. When provided, the same image is attached to every autopost message.
+- `emoji` is optional. When provided, the bot reacts to each sent autopost message with that emoji.
 - Each user can run multiple active autopost tasks at the same time.
 - Every autopost task gets a task ID such as `#1`, `#2`, or `#3`.
 - `/listautopost` shows the requesting user's active autopost tasks.
@@ -20,14 +21,14 @@ Mafty Bot is a Discord bot designed to provide an automated message posting serv
 - The bot sends an ephemeral confirmation embed when a task starts or stops.
 - The bot handles Discord rate limits and waits before continuing.
 - The bot stops a task when the provided token is invalid or expired.
-- After each successful autopost message, the bot reacts with the configured emoji.
+- After each successful autopost message, the bot reacts with the selected emoji when one is provided.
 
 ## Image Attachments
 
 The `/autopost` command includes an optional `image` parameter:
 
 ```text
-/autopost token:<token> channel_id:<channel_id> message:<message> delay:<seconds> image:<image_file>
+/autopost token:<token> channel_id:<channel_id> message:<message> delay:<seconds> image:<image_file> emoji:<emoji>
 ```
 
 The image is not typed as a text prompt. It must be uploaded as a Discord attachment.
@@ -57,14 +58,17 @@ Parameters:
 - `message`: Message text to send.
 - `delay`: Number of seconds to wait between posts.
 - `image`: Optional image attachment to include with every post.
+- `emoji`: Optional reaction emoji to add after every successful post.
 
 Example:
 
 ```text
-/autopost token:YOUR_TOKEN channel_id:123456789012345678 message:Hello delay:60 image:banner.png
+/autopost token:YOUR_TOKEN channel_id:123456789012345678 message:Hello delay:60 image:banner.png emoji:✅
 ```
 
 If an image is provided, every repeated message includes both the text and the image.
+
+If an emoji is provided, every repeated message is reacted to with that emoji. If `emoji` is left blank, the bot does not add a reaction.
 
 Each started task receives its own task ID. For example, if you start three autoposts, they may appear as `#1`, `#2`, and `#3`.
 
@@ -78,6 +82,7 @@ The list includes:
 - target channel ID
 - interval delay
 - image filename, if an image was attached
+- reaction emoji, if one was selected
 - message preview
 
 Example:

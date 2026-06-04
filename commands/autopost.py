@@ -24,9 +24,11 @@ def register_autopost_commands(bot: discord.Client) -> None:
         channel_id: str,
         message: str,
         delay: float,
-        image: Optional[discord.Attachment] = None
+        image: Optional[discord.Attachment] = None,
+        emoji: Optional[str] = None
     ):
         user_id = interaction.user.id
+        reaction_emoji = emoji.strip() if emoji else None
 
         if not is_allowed(user_id):
             embed = error_embed(
@@ -57,7 +59,16 @@ def register_autopost_commands(bot: discord.Client) -> None:
 
         task_id = get_next_task_id(user_id)
         task = asyncio.create_task(
-            autopost_task(interaction, task_id, token, channel_id, message, delay, image_payload)
+            autopost_task(
+                interaction,
+                task_id,
+                token,
+                channel_id,
+                message,
+                delay,
+                image_payload,
+                reaction_emoji
+            )
         )
         register_task(user_id, task_id, {
             "task": task,
@@ -65,6 +76,7 @@ def register_autopost_commands(bot: discord.Client) -> None:
             "message": message,
             "delay": delay,
             "image_filename": image.filename if image else None,
+            "reaction_emoji": reaction_emoji,
             "started_at": discord.utils.utcnow()
         })
 
@@ -76,6 +88,7 @@ def register_autopost_commands(bot: discord.Client) -> None:
         embed.add_field(name="Channel ID:", value=f"{channel_id}", inline=True)
         embed.add_field(name="Interval:", value=f"{delay} seconds", inline=True)
         embed.add_field(name="Image:", value=image.filename if image else "None", inline=True)
+        embed.add_field(name="Reaction Emoji:", value=reaction_emoji or "None", inline=True)
         embed.add_field(name="\u200b", value="The autopost task is now running.", inline=False)
         embed.set_footer(text="Mafty Bot - AutoPost Service")
         embed.timestamp = discord.utils.utcnow()
@@ -99,12 +112,14 @@ def register_autopost_commands(bot: discord.Client) -> None:
 
         for task_id, info in sorted(user_tasks.items()):
             image_text = info["image_filename"] or "None"
+            emoji_text = info.get("reaction_emoji") or "None"
             embed.add_field(
                 name=f"Autopost #{task_id}",
                 value=(
                     f"Channel ID: `{info['channel_id']}`\n"
                     f"Interval: `{info['delay']} seconds`\n"
                     f"Image: `{image_text}`\n"
+                    f"Reaction Emoji: `{emoji_text}`\n"
                     f"Message: ```{short_text(info['message'])}```"
                 ),
                 inline=False
